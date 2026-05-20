@@ -35,7 +35,9 @@ body{font-family:'Noto Sans KR',sans-serif;background:#f5f6fa;color:#222;}
 .b-blue{background:#e8f0fe;color:#1a56db;}
 .b-amber{background:#fef3c7;color:#92400e;}
 .map-card{background:#fff;border-radius:12px;padding:12px 8px;box-shadow:0 1px 4px rgba(0,0,0,0.07);width:100%;}
-.zones-wrap{width:100%;display:flex;align-items:flex-start;justify-content:center;}
+.stage{background:#1a1a2e;color:#fff;border-radius:8px 8px 0 0;text-align:center;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto;}
+.door-tag{background:#fff;border:1.5px solid #f59e0b;color:#92400e;border-radius:6px;font-weight:700;text-align:center;display:flex;align-items:center;justify-content:center;white-space:nowrap;padding:2px 6px;}
+.zones-wrap{display:flex;align-items:flex-start;justify-content:center;}
 .zone-block{display:flex;flex-direction:column;align-items:center;}
 .zone-label{font-weight:700;color:#4f7ef7;text-align:center;margin-bottom:4px;}
 .zone-divider{background:#e5e7eb;align-self:stretch;}
@@ -82,7 +84,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:#f5f6fa;color:#222;}
   </div>
   <div class="map-card">
     <div id="mapLoading" class="loading"><span class="spin">⟳</span> 데이터 불러오는 중...</div>
-    <div class="zones-wrap" id="mapArea"></div>
+    <div id="mapInner"></div>
   </div>
 </div>
 
@@ -92,11 +94,9 @@ const SHEET_NAME='좌석배치도_데이터';
 const CSV_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
 const ZONES=[{id:'A',cols:5},{id:'B',cols:14},{id:'C',cols:5}];
 const ROWS=9;
-const TOTAL_COLS=5+14+5; // 24
-const DIVIDERS=2;
-const ROW_LABELS=3;
-const GAP=2;
+const TOTAL_COLS=24;
 const DIVIDER_W=8;
+const GAP=2;
 
 let round=1,foundOrg=null,allData={};
 
@@ -129,17 +129,15 @@ function getInfo(key){
 }
 
 function calcSeatSize(){
-  // 카드 패딩 16px*2 제외, 컨테이너 패딩 10px*2 제외
-  const availW = window.innerWidth - 20 - 16;
-  // availW = TOTAL_COLS*sz + ROW_LABELS*(sz*0.7) + (TOTAL_COLS-3)*GAP + DIVIDERS*DIVIDER_W
-  const gapTotal = (5-1)*GAP + (14-1)*GAP + (5-1)*GAP;
-  const sz = (availW - gapTotal - DIVIDERS*DIVIDER_W) / (TOTAL_COLS + ROW_LABELS*0.7);
-  return Math.max(12, Math.floor(sz));
+  const availW=window.innerWidth-20-16;
+  const gapTotal=(5-1)*GAP+(14-1)*GAP+(5-1)*GAP;
+  const sz=(availW-gapTotal-2*DIVIDER_W)/(TOTAL_COLS+3*0.7);
+  return Math.max(12,Math.floor(sz));
 }
 
 async function loadData(){
   document.getElementById('mapLoading').style.display='flex';
-  document.getElementById('mapArea').innerHTML='';
+  document.getElementById('mapInner').innerHTML='';
   try{
     const res=await fetch(CSV_URL);
     if(!res.ok) throw new Error();
@@ -174,8 +172,7 @@ function parseCSV(text){
 
 function parseCSVLine(line){
   const r=[];let c='';let q=false;
-  for(let i=0;i<line.length;i++){
-    const ch=line[i];
+  for(const ch of line){
     if(ch==='"'){q=!q;}
     else if(ch===','&&!q){r.push(c);c='';}
     else c+=ch;
@@ -191,7 +188,6 @@ function getCell(zone,rowNum,colIdx){
 function buildZone(zoneId,cols,sz){
   const rlW=Math.floor(sz*0.7);
   const fs=Math.max(7,Math.floor(sz*0.42));
-
   const wrap=document.createElement('div');
   wrap.className='zone-block';
 
@@ -210,16 +206,13 @@ function buildZone(zoneId,cols,sz){
   numRow.className='col-nums';
   numRow.style.gap=GAP+'px';
   const spacer=document.createElement('div');
-  spacer.style.width=rlW+'px';
-  spacer.style.flexShrink='0';
+  spacer.style.cssText=`width:${rlW}px;flex-shrink:0;`;
   numRow.appendChild(spacer);
   for(let c=1;c<=cols;c++){
     const d=document.createElement('div');
     d.className='cell-num';
     d.textContent=c;
-    d.style.width=sz+'px';
-    d.style.height=Math.floor(sz*0.6)+'px';
-    d.style.fontSize=Math.max(7,Math.floor(sz*0.4))+'px';
+    d.style.cssText=`width:${sz}px;height:${Math.floor(sz*0.6)}px;font-size:${Math.max(7,Math.floor(sz*0.4))}px;`;
     numRow.appendChild(d);
   }
   grid.appendChild(numRow);
@@ -231,21 +224,17 @@ function buildZone(zoneId,cols,sz){
     const rl=document.createElement('div');
     rl.className='row-label';
     rl.textContent=r;
-    rl.style.width=rlW+'px';
-    rl.style.fontSize=fs+'px';
+    rl.style.cssText=`width:${rlW}px;font-size:${fs}px;`;
     row.appendChild(rl);
     for(let c=0;c<cols;c++){
       const val=getCell(zoneId,r,c);
+      const info=val?getInfo(val):null;
+      const hi=!!(foundOrg&&info&&info.contact===foundOrg.contact);
       const s=document.createElement('div');
-      s.className='seat '+(val?(foundOrg&&getInfo(val)&&getInfo(val).contact===foundOrg.contact?'s-hi':'s-occ'):'s-dead');
-      s.style.width=sz+'px';
-      s.style.height=sz+'px';
-      s.style.fontSize=fs+'px';
-      if(val){
-        const info=getInfo(val);
-        if(info) s.title=info.full;
-        if(foundOrg&&info&&info.contact===foundOrg.contact) s.textContent='★';
-      }
+      s.className='seat '+(val?(hi?'s-hi':'s-occ'):'s-dead');
+      s.style.cssText=`width:${sz}px;height:${sz}px;font-size:${fs}px;`;
+      if(info) s.title=info.full;
+      if(hi) s.textContent='★';
       row.appendChild(s);
     }
     grid.appendChild(row);
@@ -256,18 +245,86 @@ function buildZone(zoneId,cols,sz){
 
 function renderMap(){
   const sz=calcSeatSize();
-  const area=document.getElementById('mapArea');
-  area.innerHTML='';
+  const rlW=Math.floor(sz*0.7);
+  const doorFs=Math.max(9,Math.floor(sz*0.5));
+  const doorH=Math.max(18,Math.floor(sz*0.9));
+
+  // 각 구역 너비
+  const aW=rlW+(5*sz)+(4*GAP);
+  const bW=rlW+(14*sz)+(13*GAP);
+  const cW=rlW+(5*sz)+(4*GAP);
+  const totalW=aW+bW+cW+2*DIVIDER_W;
+
+  const inner=document.getElementById('mapInner');
+  inner.innerHTML='';
+
+  // ── 무대 ──
+  const stage=document.createElement('div');
+  stage.className='stage';
+  stage.textContent='🎤 무 대';
+  stage.style.cssText=`width:${totalW}px;height:${doorH+4}px;font-size:${doorFs+1}px;margin-bottom:${Math.floor(sz*0.4)}px;`;
+  inner.appendChild(stage);
+
+  // ── C구역 5열 앞 출입문 ──
+  // C구역은 오른쪽 끝 → A+B+구분선2개 너비만큼 왼쪽에 선, 그 다음 문, 나머지 선
+  const doorTopRow=document.createElement('div');
+  doorTopRow.style.cssText=`width:${totalW}px;display:flex;align-items:center;margin-bottom:${Math.floor(sz*0.3)}px;`;
+
+  // A+B+구분선 영역 → 선
+  const dtLine1=document.createElement('div');
+  dtLine1.style.cssText=`width:${aW+DIVIDER_W+bW+DIVIDER_W}px;height:2px;background:#e5e7eb;flex-shrink:0;`;
+  doorTopRow.appendChild(dtLine1);
+
+  // C구역 5열 앞 문 (C구역 내 5열 앞 = rlW + 4열*(sz+GAP) 위치)
+  const doorCfront=document.createElement('div');
+  doorCfront.className='door-tag';
+  doorCfront.textContent='🚪 출입문';
+  doorCfront.style.cssText=`font-size:${doorFs}px;height:${doorH}px;`;
+  doorTopRow.appendChild(doorCfront);
+
+  // 나머지 선
+  const dtLine2=document.createElement('div');
+  dtLine2.style.cssText=`flex:1;height:2px;background:#e5e7eb;`;
+  doorTopRow.appendChild(dtLine2);
+
+  inner.appendChild(doorTopRow);
+
+  // ── 좌석 배치도 ──
+  const zonesWrap=document.createElement('div');
+  zonesWrap.className='zones-wrap';
   ZONES.forEach((z,i)=>{
     if(i>0){
       const d=document.createElement('div');
       d.className='zone-divider';
-      d.style.width='1px';
-      d.style.margin=`0 ${DIVIDER_W/2}px`;
-      area.appendChild(d);
+      d.style.cssText=`width:1px;margin:0 ${DIVIDER_W/2}px;`;
+      zonesWrap.appendChild(d);
     }
-    area.appendChild(buildZone(z.id,z.cols,sz));
+    zonesWrap.appendChild(buildZone(z.id,z.cols,sz));
   });
+  inner.appendChild(zonesWrap);
+
+  // ── B구역과 C구역 사이 9열 뒤 출입문 하나 ──
+  const doorBottomRow=document.createElement('div');
+  doorBottomRow.style.cssText=`width:${totalW}px;display:flex;align-items:center;margin-top:${Math.floor(sz*0.3)}px;`;
+
+  // A구역 + 구분선 → 선
+  const dbLine1=document.createElement('div');
+  dbLine1.style.cssText=`width:${aW+DIVIDER_W+bW}px;height:2px;background:#e5e7eb;flex-shrink:0;`;
+  doorBottomRow.appendChild(dbLine1);
+
+  // B~C 사이 출입문
+  const doorBC=document.createElement('div');
+  doorBC.className='door-tag';
+  doorBC.textContent='🚪 출입문';
+  doorBC.style.cssText=`font-size:${doorFs}px;height:${doorH}px;`;
+  doorBottomRow.appendChild(doorBC);
+
+  // 나머지 선
+  const dbLine2=document.createElement('div');
+  dbLine2.style.cssText=`flex:1;height:2px;background:#e5e7eb;`;
+  doorBottomRow.appendChild(dbLine2);
+
+  inner.appendChild(doorBottomRow);
 }
 
 function doSearch(){
