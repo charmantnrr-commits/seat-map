@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>좌석 배치도</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Noto Sans KR',sans-serif;background:#f5f6fa;color:#222;min-height:100vh;}
+
+  .header{background:#fff;border-bottom:1px solid #e5e7eb;padding:18px 24px;display:flex;align-items:center;gap:12px;}
+  .header h1{font-size:18px;font-weight:700;color:#1a1a2e;}
+  .header .sub{font-size:13px;color:#888;margin-top:2px;}
+
+  .container{max-width:1100px;margin:0 auto;padding:24px 16px;}
+
+  .search-card{background:#fff;border-radius:14px;padding:20px 24px;margin-bottom:20px;box-shadow:0 1px 4px rgba(0,0,0,0.07);}
+  .search-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+  .search-row input{
+    font-family:'Noto Sans KR',sans-serif;
+    font-size:20px;letter-spacing:4px;text-align:center;
+    width:170px;padding:10px 14px;
+    border:1.5px solid #d1d5db;border-radius:10px;
+    outline:none;transition:border .2s;
+  }
+  .search-row input:focus{border-color:#4f7ef7;}
+  .btn{
+    font-family:'Noto Sans KR',sans-serif;
+    padding:10px 20px;border-radius:10px;border:none;
+    font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;
+  }
+  .btn-primary{background:#4f7ef7;color:#fff;}
+  .btn-primary:hover{background:#3a65d6;}
+  .btn-secondary{background:#f1f3f8;color:#555;}
+  .btn-secondary:hover{background:#e4e7f0;}
+  .btn-sm{padding:8px 14px;font-size:12px;}
+
+  .tabs{display:flex;gap:8px;margin-bottom:16px;}
+  .tab{padding:7px 20px;border-radius:8px;border:1.5px solid #e5e7eb;font-size:13px;font-weight:500;cursor:pointer;background:#fff;color:#888;transition:all .15s;}
+  .tab.active{background:#4f7ef7;color:#fff;border-color:#4f7ef7;}
+
+  .legend{display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap;}
+  .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#666;}
+  .legend-dot{width:14px;height:14px;border-radius:3px;}
+
+  .result-card{background:#fff;border-radius:12px;padding:14px 18px;margin-bottom:16px;border:1.5px solid #4f7ef7;box-shadow:0 2px 8px rgba(79,126,247,0.1);}
+  .r-name{font-size:16px;font-weight:700;color:#1a1a2e;margin-bottom:4px;}
+  .r-sub{font-size:13px;color:#666;margin-bottom:10px;}
+  .badges{display:flex;gap:6px;flex-wrap:wrap;}
+  .badge{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;}
+  .b-blue{background:#e8f0fe;color:#1a56db;}
+  .b-amber{background:#fef3c7;color:#92400e;}
+
+  .map-card{background:#fff;border-radius:14px;padding:20px 24px;box-shadow:0 1px 4px rgba(0,0,0,0.07);overflow-x:auto;}
+  .zones-row{display:flex;gap:0;align-items:flex-start;}
+  .zone-block{display:flex;flex-direction:column;}
+  .zone-label{font-size:12px;font-weight:700;color:#4f7ef7;text-align:center;padding:4px 0 8px;letter-spacing:1px;}
+  .zone-divider{width:1px;background:#e5e7eb;margin:0 14px;align-self:stretch;}
+  .col-nums{display:flex;gap:3px;margin-left:26px;margin-bottom:4px;}
+  .cell-num{width:28px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#bbb;}
+  .seat-row{display:flex;gap:3px;align-items:center;margin-bottom:3px;}
+  .row-label{width:22px;font-size:11px;color:#bbb;text-align:center;}
+  .seat{width:28px;height:28px;border-radius:5px;border:1px solid transparent;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;cursor:default;transition:transform .1s;}
+  .seat:hover{transform:scale(1.1);z-index:5;position:relative;}
+  .s-dead{background:#f1f3f8;border-color:#e5e7eb;}
+  .s-occ{background:#dbeafe;border-color:#93c5fd;color:#1e40af;}
+  .s-hi{background:#fde68a;border-color:#f59e0b;color:#78350f;box-shadow:0 0 0 2.5px #f59e0b;transform:scale(1.15);z-index:10;position:relative;}
+
+  .status{font-size:12px;color:#aaa;margin-bottom:10px;}
+  .no-res{text-align:center;color:#aaa;font-size:14px;padding:20px;}
+  .loading{display:flex;align-items:center;gap:8px;color:#aaa;font-size:13px;padding:20px 0;}
+  .spin{display:inline-block;animation:spin 1s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .error{color:#e53e3e;font-size:13px;padding:12px 0;}
+
+  @media(max-width:600px){
+    .container{padding:12px 8px;}
+    .search-card{padding:14px 12px;}
+    .map-card{padding:14px 8px;}
+    .seat{width:24px;height:24px;}
+    .cell-num{width:24px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="sub">연락처 마지막 4자리로 좌석을 찾아보세요</div>
+    <h1>좌석 배치도 검색</h1>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="search-card">
+    <div class="search-row">
+      <input type="text" id="pi" placeholder="0000" maxlength="4" inputmode="numeric"/>
+      <button class="btn btn-primary" onclick="doSearch()">검색</button>
+      <button class="btn btn-secondary" onclick="clearAll()">초기화</button>
+      <button class="btn btn-secondary btn-sm" onclick="loadData()">↻ 새로고침</button>
+    </div>
+    <div id="statusArea" class="status" style="margin-top:8px;"></div>
+  </div>
+
+  <div id="resultArea"></div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchRound(1,this)">1회차</div>
+    <div class="tab" onclick="switchRound(2,this)">2회차</div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#dbeafe;border:1px solid #93c5fd;"></div>배치 좌석</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#fde68a;border:1px solid #f59e0b;"></div>검색 결과</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f1f3f8;border:1px solid #e5e7eb;"></div>사석</div>
+  </div>
+
+  <div class="map-card">
+    <div id="mapLoading" class="loading"><span class="spin">⟳</span> 구글 시트에서 데이터 불러오는 중...</div>
+    <div class="zones-row" id="mapArea"></div>
+  </div>
+
+</div>
+
+<script>
+const SHEET_ID = '1qWbVTv0MBSX_b9S0J7AF_g2UxEF_U-xl8lwtDVKLUjU';
+const SHEET_NAME = '좌석배치도_데이터';
+const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`;
+
+const ZONES = [{id:'A',cols:5},{id:'B',cols:14},{id:'C',cols:5}];
+const ROWS = 9;
+
+let round = 1, foundOrg = null, allData = {};
+
+const orgInfo = {
+  '에코빌':{full:'에코빌 어린이집',contact:'010-3016-3960',manager:'박민령',total:8},
+  'e편한':{full:'국공립 안성e편한세상어린이집',contact:'010-5498-9603',manager:'이진영',total:29},
+  '공도서희':{full:'국공립공도서희스타힐스어린이집',contact:'010-6770-7778',manager:'문창숙',total:25},
+  '베이비캐슬':{full:'베이비캐슬어린이집',contact:'010-7666-0561',manager:'성영신',total:6},
+  '강담':{full:'강담어린이집',contact:'010-7767-7710',manager:'최아람',total:42},
+  '서운_1':{full:'서운어린이집',contact:'010-4139-4590',manager:'신다경',total:13,round:1},
+  '서운_2':{full:'서운어린이집',contact:'010-2015-1089',manager:'정원선',total:14,round:2},
+  '낙원':{full:'낙원어린이집',contact:'010-2210-4948',manager:'여상인',total:39},
+  '텔레토비':{full:'텔레토비어린이집',contact:'010-6599-9718',manager:'김명숙',total:7},
+  '진사':{full:'진사어린이집',contact:'010-5784-6676',manager:'노주원',total:21},
+  '예쁜아이':{full:'예쁜아이 어린이집',contact:'010-9187-8648',manager:'최희영',total:8},
+  '서해':{full:'서해그랑블어린이집',contact:'010-7754-4119',manager:'유현영',total:33},
+  '해사랑숲':{full:'해사랑숲 어린이집',contact:'010-2788-7846',manager:'이용선',total:9},
+  '아이꿈':{full:'아이꿈어린이집',contact:'010-9072-6840',manager:'최은숙',total:8},
+  '양지':{full:'양지어린이집',contact:'010-3346-4409',manager:'유옥현',total:25},
+  '리베도만':{full:'리베도만스쿨어린이집',contact:'010-6377-5979',manager:'김소영',total:10},
+  '동광':{full:'안성동광어린이집',contact:'010-9998-7859',manager:'김영주',total:17},
+  '파랑새':{full:'파랑새어린이집',contact:'010-5312-5545',manager:'최지수',total:27},
+  '롯데':{full:'롯데캐슬어린이집',contact:'010-4161-0110',manager:'이순희',total:53},
+};
+
+function getLast4(c){return c.replace(/\D/g,'').slice(-4);}
+
+function getInfo(key){
+  if(key==='서운') return round===1 ? orgInfo['서운_1'] : orgInfo['서운_2'];
+  return orgInfo[key]||null;
+}
+
+async function loadData(){
+  document.getElementById('mapLoading').style.display='flex';
+  document.getElementById('mapArea').innerHTML='';
+  document.getElementById('statusArea').textContent='';
+  try{
+    const res = await fetch(CSV_URL);
+    if(!res.ok) throw new Error();
+    const text = await res.text();
+    parseCSV(text);
+    const now = new Date().toLocaleTimeString('ko-KR');
+    document.getElementById('statusArea').textContent=`마지막 업데이트: ${now}`;
+    document.getElementById('mapLoading').style.display='none';
+    renderMap();
+  }catch(e){
+    document.getElementById('mapLoading').innerHTML='<span style="color:#e53e3e">데이터 불러오기 실패 — 시트 공개 설정을 확인해 주세요.</span>';
+  }
+}
+
+function parseCSV(text){
+  allData={};
+  const lines=text.trim().split('\n').slice(1);
+  for(const line of lines){
+    const cols=parseCSVLine(line);
+    if(cols.length<4) continue;
+    const rk=cols[0]?.replace(/"/g,'').trim();
+    const zone=cols[1]?.replace(/"/g,'').trim();
+    const rowNum=parseInt(cols[2]?.replace(/"/g,'').trim());
+    if(!rk||!zone||isNaN(rowNum)) continue;
+    if(!allData[rk]) allData[rk]={A:{},B:{},C:{}};
+    const maxC=zone==='B'?14:5;
+    const cells=[];
+    for(let i=0;i<maxC;i++) cells.push((cols[3+i]||'').replace(/"/g,'').trim());
+    allData[rk][zone][rowNum]=cells;
+  }
+}
+
+function parseCSVLine(line){
+  const r=[];let c='';let q=false;
+  for(let i=0;i<line.length;i++){
+    const ch=line[i];
+    if(ch==='"'){q=!q;}
+    else if(ch===','&&!q){r.push(c);c='';}
+    else c+=ch;
+  }
+  r.push(c);return r;
+}
+
+function getCell(zone,rowNum,colIdx){
+  const rk=round===1?'1회차':'2회차';
+  return allData[rk]?.[zone]?.[rowNum]?.[colIdx]||'';
+}
+
+function buildZone(zoneId,cols){
+  const wrap=document.createElement('div');
+  wrap.className='zone-block';
+
+  const lbl=document.createElement('div');
+  lbl.className='zone-label';lbl.textContent=zoneId+'구역';
+  wrap.appendChild(lbl);
+
+  const nums=document.createElement('div');
+  nums.className='col-nums';
+  for(let c=1;c<=cols;c++){
+    const d=document.createElement('div');d.className='cell-num';d.textContent=c;nums.appendChild(d);
+  }
+  wrap.appendChild(nums);
+
+  for(let r=1;r<=ROWS;r++){
+    const row=document.createElement('div');row.className='seat-row';
+    const rl=document.createElement('div');rl.className='row-label';rl.textContent=r;row.appendChild(rl);
+    for(let c=0;c<cols;c++){
+      const val=getCell(zoneId,r,c);
+      const s=document.createElement('div');
+      if(!val){
+        s.className='seat s-dead';
+      } else {
+        const info=getInfo(val);
+        const hi=foundOrg&&info&&info.contact===foundOrg.contact;
+        s.className='seat '+(hi?'s-hi':'s-occ');
+        if(info) s.title=info.full;
+        if(hi) s.textContent='★';
+      }
+      row.appendChild(s);
+    }
+    wrap.appendChild(row);
+  }
+  return wrap;
+}
+
+function renderMap(){
+  const area=document.getElementById('mapArea');
+  area.innerHTML='';
+  ZONES.forEach((z,i)=>{
+    if(i>0){const d=document.createElement('div');d.className='zone-divider';area.appendChild(d);}
+    area.appendChild(buildZone(z.id,z.cols));
+  });
+}
+
+function doSearch(){
+  const val=document.getElementById('pi').value.trim();
+  if(val.length<4){
+    document.getElementById('resultArea').innerHTML='<div class="result-card" style="border-color:#e5e7eb"><div class="no-res">마지막 4자리를 입력하세요.</div></div>';
+    return;
+  }
+  foundOrg=null;
+  for(const k of Object.keys(orgInfo)){
+    const o=orgInfo[k];
+    if(o.round&&o.round!==round) continue;
+    if(getLast4(o.contact)===val){foundOrg=o;break;}
+  }
+  renderResult();renderMap();
+}
+
+function renderResult(){
+  const area=document.getElementById('resultArea');
+  if(!foundOrg){
+    area.innerHTML='<div class="result-card" style="border-color:#e5e7eb"><div class="no-res">일치하는 연락처가 없습니다.</div></div>';
+    return;
+  }
+  const o=foundOrg;
+  area.innerHTML=`<div class="result-card">
+    <div class="r-name">🏫 ${o.full}</div>
+    <div class="r-sub">담당자: ${o.manager} &nbsp;·&nbsp; ${o.contact}</div>
+    <div class="badges">
+      <span class="badge b-amber">총 ${o.total}석</span>
+      <span class="badge b-blue">${round}회차</span>
+    </div>
+  </div>`;
+}
+
+function clearAll(){
+  document.getElementById('pi').value='';
+  document.getElementById('resultArea').innerHTML='';
+  foundOrg=null;renderMap();
+}
+
+function switchRound(n,el){
+  round=n;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  foundOrg=null;
+  document.getElementById('resultArea').innerHTML='';
+  renderMap();
+}
+
+document.getElementById('pi').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch();});
+loadData();
+</script>
+</body>
+</html>
