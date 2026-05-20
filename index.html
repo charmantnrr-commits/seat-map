@@ -76,11 +76,32 @@
   .error{color:#e53e3e;font-size:13px;padding:12px 0;}
 
   @media(max-width:600px){
-    .container{padding:12px 8px;}
-    .search-card{padding:14px 12px;}
-    .map-card{padding:14px 8px;}
-    .seat{width:24px;height:24px;}
-    .cell-num{width:24px;}
+    .container{padding:8px 4px;}
+    .search-card{padding:12px 10px;}
+    .map-card{padding:10px 4px;overflow-x:visible;}
+    .zones-row{gap:0;transform-origin:left top;}
+    .seat{width:18px;height:18px;font-size:7px;border-radius:3px;}
+    .cell-num{width:18px;height:14px;font-size:8px;}
+    .col-nums{gap:2px;margin-left:18px;margin-bottom:2px;}
+    .seat-row{gap:2px;margin-bottom:2px;}
+    .row-label{width:16px;font-size:9px;}
+    .zone-label{font-size:10px;padding:2px 0 4px;}
+    .zone-divider{margin:0 6px;}
+    .legend-dot{width:11px;height:11px;}
+    .legend-item{font-size:11px;}
+    .legend{gap:10px;margin-bottom:10px;}
+    .tabs{margin-bottom:10px;}
+    .tab{padding:6px 14px;font-size:12px;}
+    .header h1{font-size:15px;}
+    .header .sub{font-size:11px;}
+    .header{padding:12px 14px;}
+  }
+  @media(max-width:400px){
+    .seat{width:15px;height:15px;font-size:6px;}
+    .cell-num{width:15px;font-size:7px;}
+    .col-nums{margin-left:15px;}
+    .row-label{width:13px;font-size:8px;}
+    .zone-divider{margin:0 4px;}
   }
 </style>
 </head>
