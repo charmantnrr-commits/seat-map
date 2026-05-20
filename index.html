@@ -6,103 +6,52 @@
 <title>좌석 배치도</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
-
   *{box-sizing:border-box;margin:0;padding:0;}
   body{font-family:'Noto Sans KR',sans-serif;background:#f5f6fa;color:#222;min-height:100vh;}
-
-  .header{background:#fff;border-bottom:1px solid #e5e7eb;padding:18px 24px;display:flex;align-items:center;gap:12px;}
-  .header h1{font-size:18px;font-weight:700;color:#1a1a2e;}
-  .header .sub{font-size:13px;color:#888;margin-top:2px;}
-
-  .container{max-width:1100px;margin:0 auto;padding:24px 16px;}
-
-  .search-card{background:#fff;border-radius:14px;padding:20px 24px;margin-bottom:20px;box-shadow:0 1px 4px rgba(0,0,0,0.07);}
-  .search-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
-  .search-row input{
-    font-family:'Noto Sans KR',sans-serif;
-    font-size:20px;letter-spacing:4px;text-align:center;
-    width:170px;padding:10px 14px;
-    border:1.5px solid #d1d5db;border-radius:10px;
-    outline:none;transition:border .2s;
-  }
+  .header{background:#fff;border-bottom:1px solid #e5e7eb;padding:14px 18px;display:flex;align-items:center;}
+  .header h1{font-size:17px;font-weight:700;color:#1a1a2e;}
+  .header .sub{font-size:12px;color:#888;margin-top:2px;}
+  .container{max-width:1100px;margin:0 auto;padding:16px 12px;}
+  .search-card{background:#fff;border-radius:14px;padding:16px 18px;margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,0.07);}
+  .search-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+  .search-row input{font-family:'Noto Sans KR',sans-serif;font-size:20px;letter-spacing:4px;text-align:center;width:160px;padding:9px 12px;border:1.5px solid #d1d5db;border-radius:10px;outline:none;transition:border .2s;}
   .search-row input:focus{border-color:#4f7ef7;}
-  .btn{
-    font-family:'Noto Sans KR',sans-serif;
-    padding:10px 20px;border-radius:10px;border:none;
-    font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;
-  }
+  .btn{font-family:'Noto Sans KR',sans-serif;padding:9px 18px;border-radius:10px;border:none;font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;}
   .btn-primary{background:#4f7ef7;color:#fff;}
-  .btn-primary:hover{background:#3a65d6;}
   .btn-secondary{background:#f1f3f8;color:#555;}
-  .btn-secondary:hover{background:#e4e7f0;}
-  .btn-sm{padding:8px 14px;font-size:12px;}
-
-  .tabs{display:flex;gap:8px;margin-bottom:16px;}
-  .tab{padding:7px 20px;border-radius:8px;border:1.5px solid #e5e7eb;font-size:13px;font-weight:500;cursor:pointer;background:#fff;color:#888;transition:all .15s;}
+  .btn-sm{padding:7px 12px;font-size:12px;}
+  .tabs{display:flex;gap:8px;margin-bottom:12px;}
+  .tab{padding:7px 18px;border-radius:8px;border:1.5px solid #e5e7eb;font-size:13px;font-weight:500;cursor:pointer;background:#fff;color:#888;transition:all .15s;}
   .tab.active{background:#4f7ef7;color:#fff;border-color:#4f7ef7;}
-
-  .legend{display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap;}
-  .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#666;}
-  .legend-dot{width:14px;height:14px;border-radius:3px;}
-
-  .result-card{background:#fff;border-radius:12px;padding:14px 18px;margin-bottom:16px;border:1.5px solid #4f7ef7;box-shadow:0 2px 8px rgba(79,126,247,0.1);}
-  .r-name{font-size:16px;font-weight:700;color:#1a1a2e;margin-bottom:4px;}
-  .r-sub{font-size:13px;color:#666;margin-bottom:10px;}
+  .legend{display:flex;gap:14px;margin-bottom:12px;flex-wrap:wrap;}
+  .legend-item{display:flex;align-items:center;gap:5px;font-size:12px;color:#666;}
+  .legend-dot{width:13px;height:13px;border-radius:3px;}
+  .result-card{background:#fff;border-radius:12px;padding:13px 16px;margin-bottom:14px;border:1.5px solid #4f7ef7;box-shadow:0 2px 8px rgba(79,126,247,0.1);}
+  .r-name{font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:4px;}
+  .r-sub{font-size:13px;color:#666;margin-bottom:8px;}
   .badges{display:flex;gap:6px;flex-wrap:wrap;}
-  .badge{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;}
+  .badge{padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500;}
   .b-blue{background:#e8f0fe;color:#1a56db;}
   .b-amber{background:#fef3c7;color:#92400e;}
-
-  .map-card{background:#fff;border-radius:14px;padding:20px 24px;box-shadow:0 1px 4px rgba(0,0,0,0.07);overflow-x:auto;}
-  .zones-row{display:flex;gap:0;align-items:flex-start;}
-  .zone-block{display:flex;flex-direction:column;}
-  .zone-label{font-size:12px;font-weight:700;color:#4f7ef7;text-align:center;padding:4px 0 8px;letter-spacing:1px;}
-  .zone-divider{width:1px;background:#e5e7eb;margin:0 14px;align-self:stretch;}
-  .col-nums{display:flex;gap:3px;margin-left:26px;margin-bottom:4px;}
-  .cell-num{width:28px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#bbb;}
-  .seat-row{display:flex;gap:3px;align-items:center;margin-bottom:3px;}
-  .row-label{width:22px;font-size:11px;color:#bbb;text-align:center;}
-  .seat{width:28px;height:28px;border-radius:5px;border:1px solid transparent;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;cursor:default;transition:transform .1s;}
+  .map-card{background:#fff;border-radius:14px;padding:16px 12px;box-shadow:0 1px 4px rgba(0,0,0,0.07);}
+  .zones-row{display:flex;align-items:flex-start;}
+  .zone-block{display:flex;flex-direction:column;flex-shrink:0;}
+  .zone-label{font-weight:700;color:#4f7ef7;text-align:center;letter-spacing:1px;}
+  .zone-divider{background:#e5e7eb;align-self:stretch;flex-shrink:0;}
+  .col-nums{display:flex;}
+  .cell-num{display:flex;align-items:center;justify-content:center;color:#bbb;}
+  .seat-row{display:flex;align-items:center;}
+  .row-label{text-align:center;color:#bbb;flex-shrink:0;}
+  .seat{border-radius:4px;display:flex;align-items:center;justify-content:center;font-weight:700;cursor:default;transition:transform .1s;flex-shrink:0;}
   .seat:hover{transform:scale(1.1);z-index:5;position:relative;}
-  .s-dead{background:#f1f3f8;border-color:#e5e7eb;}
-  .s-occ{background:#dbeafe;border-color:#93c5fd;color:#1e40af;}
-  .s-hi{background:#fde68a;border-color:#f59e0b;color:#78350f;box-shadow:0 0 0 2.5px #f59e0b;transform:scale(1.15);z-index:10;position:relative;}
-
-  .status{font-size:12px;color:#aaa;margin-bottom:10px;}
+  .s-dead{background:#f1f3f8;border:1px solid #e5e7eb;}
+  .s-occ{background:#dbeafe;border:1px solid #93c5fd;color:#1e40af;}
+  .s-hi{background:#fde68a;border:1px solid #f59e0b;color:#78350f;box-shadow:0 0 0 2px #f59e0b;transform:scale(1.15);z-index:10;position:relative;}
+  .status{font-size:11px;color:#aaa;margin-top:6px;}
   .no-res{text-align:center;color:#aaa;font-size:14px;padding:20px;}
-  .loading{display:flex;align-items:center;gap:8px;color:#aaa;font-size:13px;padding:20px 0;}
+  .loading{display:flex;align-items:center;gap:8px;color:#aaa;font-size:13px;padding:16px 0;}
   .spin{display:inline-block;animation:spin 1s linear infinite;}
   @keyframes spin{to{transform:rotate(360deg);}}
-  .error{color:#e53e3e;font-size:13px;padding:12px 0;}
-
-  @media(max-width:600px){
-    .container{padding:8px 4px;}
-    .search-card{padding:12px 10px;}
-    .map-card{padding:10px 4px;overflow-x:visible;}
-    .zones-row{gap:0;transform-origin:left top;}
-    .seat{width:18px;height:18px;font-size:7px;border-radius:3px;}
-    .cell-num{width:18px;height:14px;font-size:8px;}
-    .col-nums{gap:2px;margin-left:18px;margin-bottom:2px;}
-    .seat-row{gap:2px;margin-bottom:2px;}
-    .row-label{width:16px;font-size:9px;}
-    .zone-label{font-size:10px;padding:2px 0 4px;}
-    .zone-divider{margin:0 6px;}
-    .legend-dot{width:11px;height:11px;}
-    .legend-item{font-size:11px;}
-    .legend{gap:10px;margin-bottom:10px;}
-    .tabs{margin-bottom:10px;}
-    .tab{padding:6px 14px;font-size:12px;}
-    .header h1{font-size:15px;}
-    .header .sub{font-size:11px;}
-    .header{padding:12px 14px;}
-  }
-  @media(max-width:400px){
-    .seat{width:15px;height:15px;font-size:6px;}
-    .cell-num{width:15px;font-size:7px;}
-    .col-nums{margin-left:15px;}
-    .row-label{width:13px;font-size:8px;}
-    .zone-divider{margin:0 4px;}
-  }
 </style>
 </head>
 <body>
@@ -115,7 +64,6 @@
 </div>
 
 <div class="container">
-
   <div class="search-card">
     <div class="search-row">
       <input type="text" id="pi" placeholder="0000" maxlength="4" inputmode="numeric"/>
@@ -123,7 +71,7 @@
       <button class="btn btn-secondary" onclick="clearAll()">초기화</button>
       <button class="btn btn-secondary btn-sm" onclick="loadData()">↻ 새로고침</button>
     </div>
-    <div id="statusArea" class="status" style="margin-top:8px;"></div>
+    <div id="statusArea" class="status"></div>
   </div>
 
   <div id="resultArea"></div>
@@ -140,10 +88,9 @@
   </div>
 
   <div class="map-card">
-    <div id="mapLoading" class="loading"><span class="spin">⟳</span> 구글 시트에서 데이터 불러오는 중...</div>
+    <div id="mapLoading" class="loading"><span class="spin">⟳</span> 데이터 불러오는 중...</div>
     <div class="zones-row" id="mapArea"></div>
   </div>
-
 </div>
 
 <script>
@@ -154,7 +101,31 @@ const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=
 const ZONES = [{id:'A',cols:5},{id:'B',cols:14},{id:'C',cols:5}];
 const ROWS = 9;
 
+// 전체 열 수: A(5) + 구분(1) + B(14) + 구분(1) + C(5) = 26열 + 행라벨(1) = 27
+// 구분선은 px 고정, 나머지를 좌석 크기로 계산
+const DIVIDER_W = 10; // 구분선+여백
+const ROW_LABEL_W_RATIO = 0.8; // 행라벨은 좌석의 0.8배
+const GAP = 2;
+
+function calcSeatSize() {
+  const mapCard = document.querySelector('.map-card');
+  const availW = mapCard.clientWidth - 24; // padding 제외
+  // 총 셀 수: 행라벨3개 + 좌석(5+14+5)=24 + 구분선2개
+  // 행라벨 = seatSize * 0.8
+  // gap: (셀수-1) * GAP per zone + 구분선
+  // availW = 3*(seatSize*0.8) + 24*seatSize + 2*DIVIDER_W + gaps
+  // gaps: (5+14+5-1+3-1)*GAP = 25*GAP (각 존 내부 gap) + 이미 divider에 포함
+  const totalSeats = 24;
+  const rowLabels = 3;
+  const gapTotal = (5-1)*GAP + (14-1)*GAP + (5-1)*GAP; // 각 존 내부 gap
+  const dividers = 2 * DIVIDER_W;
+  // availW = seatSize*(totalSeats + rowLabels*0.8) + gapTotal + dividers
+  const sz = (availW - gapTotal - dividers) / (totalSeats + rowLabels * ROW_LABEL_W_RATIO);
+  return Math.max(14, Math.min(28, Math.floor(sz)));
+}
+
 let round = 1, foundOrg = null, allData = {};
+let seatSize = 24;
 
 const orgInfo = {
   '에코빌':{full:'에코빌 어린이집',contact:'010-3016-3960',manager:'박민령',total:8},
@@ -179,9 +150,8 @@ const orgInfo = {
 };
 
 function getLast4(c){return c.replace(/\D/g,'').slice(-4);}
-
 function getInfo(key){
-  if(key==='서운') return round===1 ? orgInfo['서운_1'] : orgInfo['서운_2'];
+  if(key==='서운') return round===1?orgInfo['서운_1']:orgInfo['서운_2'];
   return orgInfo[key]||null;
 }
 
@@ -190,11 +160,11 @@ async function loadData(){
   document.getElementById('mapArea').innerHTML='';
   document.getElementById('statusArea').textContent='';
   try{
-    const res = await fetch(CSV_URL);
+    const res=await fetch(CSV_URL);
     if(!res.ok) throw new Error();
-    const text = await res.text();
+    const text=await res.text();
     parseCSV(text);
-    const now = new Date().toLocaleTimeString('ko-KR');
+    const now=new Date().toLocaleTimeString('ko-KR');
     document.getElementById('statusArea').textContent=`마지막 업데이트: ${now}`;
     document.getElementById('mapLoading').style.display='none';
     renderMap();
@@ -237,24 +207,50 @@ function getCell(zone,rowNum,colIdx){
   return allData[rk]?.[zone]?.[rowNum]?.[colIdx]||'';
 }
 
+function applySize(el, w, h, fontSize){
+  el.style.width=w+'px';
+  el.style.height=h+'px';
+  if(fontSize) el.style.fontSize=fontSize+'px';
+}
+
 function buildZone(zoneId,cols){
+  const sz=seatSize;
+  const rlW=Math.floor(sz*ROW_LABEL_W_RATIO);
   const wrap=document.createElement('div');
   wrap.className='zone-block';
 
   const lbl=document.createElement('div');
-  lbl.className='zone-label';lbl.textContent=zoneId+'구역';
+  lbl.className='zone-label';
+  lbl.textContent=zoneId+'구역';
+  lbl.style.fontSize=Math.max(9,sz*0.55)+'px';
+  lbl.style.paddingBottom='4px';
   wrap.appendChild(lbl);
 
   const nums=document.createElement('div');
   nums.className='col-nums';
+  nums.style.marginLeft=rlW+'px';
+  nums.style.gap=GAP+'px';
+  nums.style.marginBottom='3px';
   for(let c=1;c<=cols;c++){
-    const d=document.createElement('div');d.className='cell-num';d.textContent=c;nums.appendChild(d);
+    const d=document.createElement('div');
+    d.className='cell-num';
+    d.textContent=c;
+    applySize(d,sz,Math.floor(sz*0.6),Math.max(8,sz*0.45));
+    nums.appendChild(d);
   }
   wrap.appendChild(nums);
 
   for(let r=1;r<=ROWS;r++){
-    const row=document.createElement('div');row.className='seat-row';
-    const rl=document.createElement('div');rl.className='row-label';rl.textContent=r;row.appendChild(rl);
+    const row=document.createElement('div');
+    row.className='seat-row';
+    row.style.gap=GAP+'px';
+    row.style.marginBottom=GAP+'px';
+    const rl=document.createElement('div');
+    rl.className='row-label';
+    rl.textContent=r;
+    rl.style.width=rlW+'px';
+    rl.style.fontSize=Math.max(8,sz*0.45)+'px';
+    row.appendChild(rl);
     for(let c=0;c<cols;c++){
       const val=getCell(zoneId,r,c);
       const s=document.createElement('div');
@@ -267,6 +263,7 @@ function buildZone(zoneId,cols){
         if(info) s.title=info.full;
         if(hi) s.textContent='★';
       }
+      applySize(s,sz,sz,Math.max(7,sz*0.4));
       row.appendChild(s);
     }
     wrap.appendChild(row);
@@ -274,11 +271,20 @@ function buildZone(zoneId,cols){
   return wrap;
 }
 
+function buildDivider(){
+  const d=document.createElement('div');
+  d.className='zone-divider';
+  d.style.width='1px';
+  d.style.margin='0 '+(DIVIDER_W/2)+'px';
+  return d;
+}
+
 function renderMap(){
+  seatSize=calcSeatSize();
   const area=document.getElementById('mapArea');
   area.innerHTML='';
   ZONES.forEach((z,i)=>{
-    if(i>0){const d=document.createElement('div');d.className='zone-divider';area.appendChild(d);}
+    if(i>0) area.appendChild(buildDivider());
     area.appendChild(buildZone(z.id,z.cols));
   });
 }
@@ -331,6 +337,7 @@ function switchRound(n,el){
 }
 
 document.getElementById('pi').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch();});
+window.addEventListener('resize',()=>renderMap());
 loadData();
 </script>
 </body>
